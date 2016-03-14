@@ -650,6 +650,7 @@
     NSString* js = [NSString stringWithFormat:
                     @"setTimeout('plugin.notification.local.on%@(%@)',0)",
                     event, params];
+    NSLog(@"Fire Event = %@",js);
 
     if (deviceready) {
         [self.commandDelegate evalJs:js];
