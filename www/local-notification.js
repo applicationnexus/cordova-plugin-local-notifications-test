@@ -18,6 +18,8 @@
     specific language governing permissions and limitations
     under the License.
 */
+var exec = require('cordova/exec'),
+cordova = require('cordova');
 
 var LocalNotification = function () {
     this._defaults = {
@@ -124,7 +126,7 @@ LocalNotification.prototype = {
             };
         }
 
-        cordova.exec(callbackFn, null, 'LocalNotification', 'add', [options]);
+        exec(callbackFn, null, 'LocalNotification', 'add', [options]);
 
         return options.id;
     },
@@ -135,14 +137,14 @@ LocalNotification.prototype = {
      * @param {String} id of the notification
      */
     cancel: function (id) {
-        cordova.exec(null, null, 'LocalNotification', 'cancel', [id.toString()]);
+        exec(null, null, 'LocalNotification', 'cancel', [id.toString()]);
     },
 
     /**
      * Removes all previously registered notifications
      */
     cancelAll: function () {
-        cordova.exec(null, null, 'LocalNotification', 'cancelAll', []);
+        exec(null, null, 'LocalNotification', 'cancelAll', []);
     },
 
     /**
@@ -153,7 +155,7 @@ LocalNotification.prototype = {
      * @param {Function} callback
      */
     getScheduledIds: function (callback) {
-        cordova.exec(callback, null, 'LocalNotification', 'getScheduledIds', []);
+        exec(callback, null, 'LocalNotification', 'getScheduledIds', []);
     },
 
     /**
@@ -165,7 +167,7 @@ LocalNotification.prototype = {
      * @param {Function} callback
      */
     isScheduled: function (id, callback) {
-        cordova.exec(callback, null, 'LocalNotification', 'isScheduled', [id.toString()]);
+        exec(callback, null, 'LocalNotification', 'isScheduled', [id.toString()]);
     },
 
     /**
@@ -181,14 +183,14 @@ LocalNotification.prototype = {
             callback.call(scope || this, badge);
         };
 
-        cordova.exec(fn, null, 'LocalNotification', 'hasPermission', []);
+        exec(fn, null, 'LocalNotification', 'hasPermission', []);
     },
 
     /**
      * Ask for permission to show badges if not already granted.
      */
     promptForPermission: function () {
-        cordova.exec(null, null, 'LocalNotification', 'promptForPermission', []);
+        exec(null, null, 'LocalNotification', 'promptForPermission', []);
     },
 
     /**
@@ -232,21 +234,21 @@ var plugin  = new LocalNotification(),
     channel = require('cordova/channel');
 
 channel.deviceready.subscribe( function () {
-    cordova.exec(null, null, 'LocalNotification', 'deviceready', []);
+    exec(null, null, 'LocalNotification', 'deviceready', []);
 });
 
 channel.onCordovaReady.subscribe( function () {
     channel.onCordovaInfoReady.subscribe( function () {
         if (device.platform == 'Android') {
             channel.onPause.subscribe( function () {
-                cordova.exec(null, null, 'LocalNotification', 'pause', []);
+                exec(null, null, 'LocalNotification', 'pause', []);
             });
 
             channel.onResume.subscribe( function () {
-                cordova.exec(null, null, 'LocalNotification', 'resume', []);
+                exec(null, null, 'LocalNotification', 'resume', []);
             });
 
-            cordova.exec(null, null, 'LocalNotification', 'resume', []);
+            exec(null, null, 'LocalNotification', 'resume', []);
         }
 
         plugin.applyPlatformSpecificOptions();
