@@ -76,7 +76,7 @@
 
 @synthesize deviceready, eventQueue, applicationState, scheduledNotifications;
 
-/**
+/**hasp
  * Executes all queued events.
  */
 - (void) deviceready:(CDVInvokedUrlCommand*)command
@@ -222,9 +222,21 @@
  */
 - (void) hasPermission:(CDVInvokedUrlCommand *)command
 {
-    [self.commandDelegate runInBackground:^{
+    // [self.commandDelegate runInBackground:^{
+    //     CDVPluginResult* result;
+    //     BOOL hasPermission = [self hasPermissionToSheduleNotifications];
+
+    //     result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
+    //                                  messageAsBool:hasPermission];
+
+    //     [self.commandDelegate sendPluginResult:result
+    //                                 callbackId:command.callbackId];
+    // }];
+     [self.commandDelegate runInBackground:^{
         CDVPluginResult* result;
-        BOOL hasPermission = [self hasPermissionToSheduleNotifications];
+        BOOL hasPermission;
+
+        hasPermission = [self hasPermissionToScheduleLocalNotifications];
 
         result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
                                      messageAsBool:hasPermission];
@@ -232,6 +244,29 @@
         [self.commandDelegate sendPluginResult:result
                                     callbackId:command.callbackId];
     }];
+    
+}
+
+/**
+ * If the app has the permission to schedule local notifications.
+ */
+- (BOOL) hasPermissionToScheduleLocalNotifications
+{
+    if ([[UIApplication sharedApplication]
+         respondsToSelector:@selector(registerUserNotificationSettings:)])
+    {
+        UIUserNotificationType types;
+        UIUserNotificationSettings *settings;
+
+        settings = [[UIApplication sharedApplication]
+                    currentUserNotificationSettings];
+
+        types = UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound;
+
+        return (settings.types & types);
+    } else {
+        return YES;
+    }
 }
 
 /**
