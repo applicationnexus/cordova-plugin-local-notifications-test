@@ -242,20 +242,29 @@
  */
 - (void) promptForPermission:(CDVInvokedUrlCommand *)command
 {
-    if (IsAtLeastiOSVersion(@"8.0")) {
-        UIUserNotificationType types;
-        UIUserNotificationSettings *settings;
+    // if (IsAtLeastiOSVersion(@"8.0")) {
+    //     UIUserNotificationType types;
+    //     UIUserNotificationSettings *settings;
 
-        types = UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound;
+    //     types = UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound;
 
-        settings = [UIUserNotificationSettings settingsForTypes:types
-                                                     categories:nil];
+    //     settings = [UIUserNotificationSettings settingsForTypes:types
+    //                                                  categories:nil];
 
-        [self.commandDelegate runInBackground:^{
-            [[UIApplication sharedApplication]
-             registerUserNotificationSettings:settings];
-        }];
-    }
+    //     [self.commandDelegate runInBackground:^{
+    //         [[UIApplication sharedApplication]
+    //          registerUserNotificationSettings:settings];
+    //     }];
+    // }
+       if ([[UIApplication sharedApplication] respondsToSelector:@selector(registerUserNotificationSettings:)])
+       {
+          UIUserNotificationType types;
+          UIUserNotificationSettings *settings;
+          settings = [[UIApplication sharedApplication] currentUserNotificationSettings];
+          types = settings.types|UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound;
+          settings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
+          [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
+       }
 }
 
 /**
