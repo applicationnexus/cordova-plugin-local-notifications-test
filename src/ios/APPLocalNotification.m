@@ -1,6 +1,6 @@
 /*
  Copyright 2013-2014 appPlant UG
-
+ 
  Licensed to the Apache Software Foundation (ASF) under one
  or more contributor license agreements.  See the NOTICE file
  distributed with this work for additional information
@@ -8,9 +8,9 @@
  to you under the Apache License, Version 2.0 (the
  "License"); you may not use this file except in compliance
  with the License.  You may obtain a copy of the License at
-
+ 
  http://www.apache.org/licenses/LICENSE-2.0
-
+ 
  Unless required by applicable law or agreed to in writing,
  software distributed under the License is distributed on an
  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -82,11 +82,11 @@
 - (void) deviceready:(CDVInvokedUrlCommand*)command
 {
     deviceready = YES;
-
+    
     for (NSString* js in eventQueue) {
         [self.commandDelegate evalJs:js];
     }
-
+    
     [eventQueue removeAllObjects];
 }
 
@@ -101,21 +101,21 @@
     [self.commandDelegate runInBackground:^{
         NSArray* arguments = [command arguments];
         NSMutableDictionary* properties = [arguments objectAtIndex:0];
-
+        
         UILocalNotification* notification;
         NSString* id = [properties objectForKey:@"id"];
-
+        
         if ([self isNotificationScheduledWithId:id]) {
             notification = [self notificationWithId:id];
         }
-
+        
         if (notification) {
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC),
                            dispatch_get_main_queue(), ^{
                                [self cancelNotification:notification fireEvent:NO];
                            });
         }
-
+        
         [self scheduleNotificationWithProperties:properties];
     }];
 }
@@ -131,9 +131,9 @@
     [self.commandDelegate runInBackground:^{
         NSArray* arguments = [command arguments];
         NSString* id       = [arguments objectAtIndex:0];
-
+        
         UILocalNotification* notification = [self notificationWithId:id];
-
+        
         if (notification) {
             [self cancelNotification:notification fireEvent:YES];
         }
@@ -147,14 +147,14 @@
 {
     [self.commandDelegate runInBackground:^{
         NSArray* notifications = self.scheduledNotifications;
-
+        
         for (UILocalNotification* notification in notifications) {
             [self cancelNotification:notification fireEvent:YES];
         }
-
+        
         [[UIApplication sharedApplication]
          cancelAllLocalNotifications];
-
+        
         [[UIApplication sharedApplication]
          setApplicationIconBadgeNumber:0];
     }];
@@ -175,10 +175,10 @@
         NSString* id       = [arguments objectAtIndex:0];
         bool isScheduled   = [self isNotificationScheduledWithId:id];
         CDVPluginResult* result;
-
+        
         result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
                                      messageAsBool:isScheduled];
-
+        
         [self.commandDelegate sendPluginResult:result
                                     callbackId:command.callbackId];
     }];
@@ -194,20 +194,20 @@
 {
     [self.commandDelegate runInBackground:^{
         NSArray* notifications = self.scheduledNotifications;
-
+        
         NSMutableArray* scheduledIds = [[NSMutableArray alloc] init];
         CDVPluginResult* result;
-
+        
         for (UILocalNotification* notification in notifications)
         {
             NSString* id = [notification.userInfo objectForKey:@"id"];
-
+            
             [scheduledIds addObject:id];
         }
-
+        
         result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
                                     messageAsArray:scheduledIds];
-
+        
         [self.commandDelegate sendPluginResult:result
                                     callbackId:command.callbackId];
     }];
@@ -225,22 +225,22 @@
     // [self.commandDelegate runInBackground:^{
     //     CDVPluginResult* result;
     //     BOOL hasPermission = [self hasPermissionToSheduleNotifications];
-
+    
     //     result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
     //                                  messageAsBool:hasPermission];
-
+    
     //     [self.commandDelegate sendPluginResult:result
     //                                 callbackId:command.callbackId];
     // }];
-     [self.commandDelegate runInBackground:^{
+    [self.commandDelegate runInBackground:^{
         CDVPluginResult* result;
         BOOL hasPermission;
-
+        
         hasPermission = [self hasPermissionToScheduleLocalNotifications];
-
+        
         result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
                                      messageAsBool:hasPermission];
-
+        
         [self.commandDelegate sendPluginResult:result
                                     callbackId:command.callbackId];
     }];
@@ -257,12 +257,12 @@
     {
         UIUserNotificationType types;
         UIUserNotificationSettings *settings;
-
+        
         settings = [[UIApplication sharedApplication]
                     currentUserNotificationSettings];
-
+        
         types = UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound;
-
+        
         return (settings.types & types);
     } else {
         return YES;
@@ -280,26 +280,26 @@
     // if (IsAtLeastiOSVersion(@"8.0")) {
     //     UIUserNotificationType types;
     //     UIUserNotificationSettings *settings;
-
+    
     //     types = UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound;
-
+    
     //     settings = [UIUserNotificationSettings settingsForTypes:types
     //                                                  categories:nil];
-
+    
     //     [self.commandDelegate runInBackground:^{
     //         [[UIApplication sharedApplication]
     //          registerUserNotificationSettings:settings];
     //     }];
     // }
-       if ([[UIApplication sharedApplication] respondsToSelector:@selector(registerUserNotificationSettings:)])
-       {
-          UIUserNotificationType types;
-          UIUserNotificationSettings *settings;
-          settings = [[UIApplication sharedApplication] currentUserNotificationSettings];
-          types = settings.types|UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound;
-          settings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
-          [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
-       }
+    if ([[UIApplication sharedApplication] respondsToSelector:@selector(registerUserNotificationSettings:)])
+    {
+        UIUserNotificationType types;
+        UIUserNotificationSettings *settings;
+        settings = [[UIApplication sharedApplication] currentUserNotificationSettings];
+        types = settings.types|UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound;
+        settings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
+        [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
+    }
 }
 
 /**
@@ -310,12 +310,12 @@
     if (IsAtLeastiOSVersion(@"8.0")) {
         UIUserNotificationType types;
         UIUserNotificationSettings *settings;
-
+        
         settings = [[UIApplication sharedApplication]
                     currentUserNotificationSettings];
-
+        
         types = UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound;
-
+        
         return (settings.types & types);
     } else {
         return YES;
@@ -332,13 +332,13 @@
 {
     UILocalNotification* notification = [self notificationWithProperties:
                                          properties];
-
+    
     NSDictionary* userInfo = notification.userInfo;
     NSString* id = [userInfo objectForKey:@"id"];
     NSString* json = [userInfo objectForKey:@"json"];
-
+    
     [self fireEvent:@"add" id:id json:json];
-
+    
     [[UIApplication sharedApplication]
      scheduleLocalNotification:notification];
 }
@@ -356,10 +356,10 @@
     NSDictionary* userInfo = notification.userInfo;
     NSString* id           = [userInfo objectForKey:@"id"];
     NSString* json         = [userInfo objectForKey:@"json"];
-
+    
     [[UIApplication sharedApplication]
      cancelLocalNotification:notification];
-
+    
     if (fireEvent) {
         [self fireEvent:@"cancel" id:id json:json];
     }
@@ -375,15 +375,15 @@
 - (void) cancelAllNotificationsWhichAreOlderThen:(float)seconds
 {
     NSDate* now = [NSDate date];
-
+    
     NSArray* notifications = self.scheduledNotifications;
-
+    
     for (UILocalNotification* notification in notifications)
     {
         NSDate* fireDate = notification.fireDate;
         NSTimeInterval fireDateDistance = [now timeIntervalSinceDate:
                                            fireDate];
-
+        
         if (notification.repeatInterval == NSEraCalendarUnit
             && fireDateDistance > seconds) {
             [self cancelNotification:notification fireEvent:YES];
@@ -399,7 +399,7 @@
 - (NSMutableDictionary*) repeatDict
 {
     NSMutableDictionary* repeatDict = [[NSMutableDictionary alloc] init];
-
+    
 #ifdef NSCalendarUnitHour
     [repeatDict setObject:
      [NSNumber numberWithInt:NSCalendarUnitSecond] forKey:@"secondly"];
@@ -431,10 +431,10 @@
     [repeatDict setObject:
      [NSNumber numberWithInt:NSYearCalendarUnit] forKey:@"yearly"];
 #endif
-
+    
     [repeatDict setObject:
      [NSNumber numberWithInt:NSEraCalendarUnit] forKey:@""];
-
+    
     return repeatDict;
 }
 
@@ -450,7 +450,7 @@
     NSString* id = [options objectForKey:@"id"];
     NSString* ac = [options objectForKey:@"autoCancel"];
     NSString* js = [options objectForKey:@"json"];
-
+    
     return [NSDictionary dictionaryWithObjectsAndKeys:
             id, @"id", ac, @"autoCancel", js, @"json", nil];
 }
@@ -465,22 +465,22 @@
 - (UILocalNotification*) notificationWithProperties:(NSMutableDictionary*)options
 {
     UILocalNotification* notification = [[UILocalNotification alloc] init];
-
+    
     double timestamp = [[options objectForKey:@"date"] doubleValue];
     NSString* msg = [options objectForKey:@"message"];
     NSString* title = [options objectForKey:@"title"];
     NSString* sound = [options objectForKey:@"sound"];
     NSString* repeat = [options objectForKey:@"repeat"];
     NSInteger badge = [[options objectForKey:@"badge"] intValue];
-
+    
     notification.fireDate = [NSDate dateWithTimeIntervalSince1970:timestamp];
     notification.timeZone = [NSTimeZone defaultTimeZone];
     notification.userInfo = [self userDict:options];
     notification.applicationIconBadgeNumber = badge;
-
+    
     notification.repeatInterval = [[[self repeatDict] objectForKey:repeat]
                                    intValue];
-
+    
     if (![self stringIsNullOrEmpty:msg])
     {
         if (![self stringIsNullOrEmpty:title]) {
@@ -490,7 +490,7 @@
             notification.alertBody = msg;
         }
     }
-
+    
     if (sound != (NSString*)[NSNull null])
     {
         if ([sound isEqualToString:@""]) {
@@ -499,7 +499,7 @@
             notification.soundName = sound;
         }
     }
-
+    
     return notification;
 }
 
@@ -510,21 +510,22 @@
 - (void) didReceiveLocalNotification:(NSNotification*)localNotification
 {
     UILocalNotification* notification = [localNotification object];
-
+    NSLog(@"Notification Received = %@",notification);
     NSDictionary* userInfo = notification.userInfo;
     NSString* id = [userInfo objectForKey:@"id"];
     NSString* json = [userInfo objectForKey:@"json"];
     BOOL autoCancel = [[userInfo objectForKey:@"autoCancel"] boolValue];
-
+    
     NSDate* now = [NSDate date];
     NSDate* fireDate = notification.fireDate;
     NSTimeInterval fireDateDistance = [now timeIntervalSinceDate:fireDate];
+    NSLog(@"Fire Date Instance = %f",fireDateDistance);
     NSString* event = (fireDateDistance < 1) ? @"trigger" : @"click";
-
+    
     if (autoCancel && [event isEqualToString:@"click"]) {
         [self cancelNotification:notification fireEvent:YES];
     }
-
+    NSLog(@"Event = %@",event);
     [self fireEvent:event id:id json:json];
 }
 
@@ -534,10 +535,10 @@
 - (void) didFinishLaunchingWithOptions:(NSNotification*)notification
 {
     NSDictionary* launchOptions = [notification userInfo];
-
+    
     UILocalNotification* localNotification = [launchOptions objectForKey:
                                               UIApplicationLaunchOptionsLocalNotificationKey];
-
+     NSLog(@"didFinishLaunchingWithOptions Received = %@",localNotification);
     if (localNotification) {
         [self didReceiveLocalNotification:
          [NSNotification notificationWithName:CDVLocalNotification
@@ -554,14 +555,14 @@
 {
     NSNotificationCenter* notificationCenter = [NSNotificationCenter
                                                 defaultCenter];
-
+    
     eventQueue = [[NSMutableArray alloc] init];
-
+    
     [notificationCenter addObserver:self
                            selector:@selector(didReceiveLocalNotification:)
                                name:CDVLocalNotification
                              object:nil];
-
+    
     [notificationCenter addObserver:self
                            selector:@selector(didFinishLaunchingWithOptions:)
                                name:UIApplicationDidFinishLaunchingNotification
@@ -588,11 +589,11 @@
     if (str == (NSString*)[NSNull null]) {
         return YES;
     }
-
+    
     if ([str isEqualToString:@""]) {
         return YES;
     }
-
+    
     return NO;
 }
 
@@ -606,7 +607,7 @@
 - (BOOL) isNotificationScheduledWithId:(NSString*)id
 {
     UILocalNotification* notification = [self notificationWithId:id];
-
+    
     return notification != NULL;
 }
 
@@ -620,16 +621,16 @@
 - (UILocalNotification*) notificationWithId:(NSString*)id
 {
     NSArray* notifications = self.scheduledNotifications;
-
+    
     for (UILocalNotification* notification in notifications)
     {
         NSString* notId = [notification.userInfo objectForKey:@"id"];
-
+        
         if ([notId isEqualToString:id]) {
             return notification;
         }
     }
-
+    
     return NULL;
 }
 
@@ -643,9 +644,9 @@
 {
     UIApplicationState state = [[UIApplication sharedApplication]
                                 applicationState];
-
+    
     bool isActive = state == UIApplicationStateActive;
-
+    
     return isActive ? @"foreground" : @"background";
 }
 
@@ -659,17 +660,17 @@
 {
     NSMutableArray* notificationsWithoutNIL = [[NSMutableArray alloc]
                                                init];
-
+    
     NSArray* notifications = [[UIApplication sharedApplication]
                               scheduledLocalNotifications];
-
+    
     for (UILocalNotification* notification in notifications)
     {
         if (notification) {
             [notificationsWithoutNIL addObject:notification];
         }
     }
-
+    
     return notificationsWithoutNIL;
 }
 
@@ -686,16 +687,16 @@
 - (void) fireEvent:(NSString*)event id:(NSString*)id json:(NSString*)json
 {
     NSString* appState = self.applicationState;
-
+    
     NSString* params = [NSString stringWithFormat:
                         @"\"%@\",\"%@\",\\'%@\\'",
                         id, appState, json];
-
+    
     NSString* js = [NSString stringWithFormat:
                     @"setTimeout('plugin.notification.local.on%@(%@)',0)",
                     event, params];
     NSLog(@"Fire Event = %@",js);
-
+    
     if (deviceready) {
         [self.commandDelegate evalJs:js];
     } else {
